@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Library</title>
+    <link rel="stylesheet" href="ind.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto" rel="stylesheet" type="text/css">
+    
+  </head>
+  <body>
+    <div class="container">
+      <div class="search-bar">
+        <input type="text" placeholder="Search for books..." id="search-input">
+      </div>
+      <ul class="search-results" id="search-results"></ul>
+      <div class="load-more" id="load-more">
+        <button id="load-more-btn">Load More</button>
+      </div>
+    </div>
+
+    <script>
+      const searchInput = document.getElementById('search-input');
+      const searchResults = document.getElementById('search-results');
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      let currentPage = 1;
+
+      // Function to fetch search results from the API
+      function fetchSearchResults(query, page) {
+        // Replace this with your actual API endpoint
+        const endpoint = `https://api.example.com/books?query=${query}&page=${page}`;
+
+        // Make a fetch request to the API
+        fetch(endpoint)
+          .then(response => response.json())
+          .then(data => {
+            displaySearchResults(data.results);
+            if (data.hasMore) {
+              showLoadMoreButton();
+            } else {
+              hideLoadMoreButton();
+            }
+          })
+          .catch(error => {
+            console.log('Error:', error);
+          });
+      }
+
+      // Function to display the search results
+      function displaySearchResults(results) {
+        searchResults.innerHTML = '';
+
+        results.forEach(book => {
+          const bookItem = document.createElement('li');
+          bookItem.classList.add('book-item');
+
+          const title = document.createElement('h3');
+          title.textContent = book.title;
+
+          const author = document.createElement('p');
+          author.textContent = `Author: ${book.author}`;
+
+          const genre = document.createElement('p');
+          genre.textContent = `Genre: ${book.genre}`;
+
+          const year = document.createElement('p');
+          year.textContent = `Year: ${book.year}`;
+
+          bookItem.appendChild(title);
+          bookItem.appendChild(author);
+          bookItem.appendChild(genre);
+          bookItem.appendChild(year);
+
+          searchResults.appendChild(bookItem);
+        });
+      }
+
+      // Function to load more search results
+      function loadMoreResults() {
+        currentPage++;
+        const query = searchInput.value;
+        fetchSearchResults(query, currentPage);
+      }
+
+      // Event listener for search input
+      searchInput.addEventListener('input', function() {
+        currentPage = 1;
+        const query = this.value;
+        fetchSearchResults(query, currentPage);
+      });
+
+      // Event listener for load more button
+      loadMoreBtn.addEventListener('click', loadMoreResults);
+
+      // Function to show the load more button
+      function showLoadMoreButton() {
+        loadMoreBtn.style.display = 'block';
+      }
+
+      // Function to hide the load more button
+      function hideLoadMoreButton() {
+        loadMoreBtn.style.display = 'none';
+      }
+    </script>
+	<script src="js/api.js" type="module"></script>
+  </body>
+</html>
